@@ -1,9 +1,10 @@
-from flask import jsonify, request, Flask
-from flask_cors import CORS
+from flask import jsonify, request, Flask, make_response, abort
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
-CORS(app)
+
+CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}}, max_age=86400)
 
 all_heros = [
      { 'id': 11, 'name': 'Dr Nice'},
@@ -27,7 +28,14 @@ def detail(id):
     for hero in all_heros:
         if hero['id'] == int(id):
             return jsonify(hero)
-    return "Record not found", 400
+    abort(400)
+
+@app.errorhandler(400)
+def not_found(error):
+    resp = make_response('Record not found', 400)
+    resp.access_control_max_age = 86400
+    resp.headers['X-Client-Header'] = 'Not Found'
+    return resp
 
 @app.route('/update', methods=['POST'])
 def update():

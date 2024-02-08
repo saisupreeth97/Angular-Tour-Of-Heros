@@ -16,7 +16,7 @@ export class HeroService {
   getHeros(): Observable<Hero[]> {
     const heroes = this.httpClient.get<Hero[]>('http://127.0.0.1:5000/heroes');
     this.messageService.add('The HeroService has fetched the heroes');
-    return of(HEROES);
+    return heroes;
     // return heroes;
   }
 
